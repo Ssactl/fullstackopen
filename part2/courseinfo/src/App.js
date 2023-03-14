@@ -16,12 +16,25 @@ const Content = ({ parts }) => (
   </>
 );
 
-const Course = ({ course }) => (
-  <>
-    <Header course={course.name}></Header>
-    <Content parts={course.parts}></Content>
-  </>
-);
+const Course = ({ course }) => {
+  // const sum =
+  //   course.parts[0].exercises +
+  //   course.parts[1].exercises +
+  //   course.parts[2].exercises;
+
+  const sum = course.parts.reduce(
+    (accumulator, currentValue) => accumulator + currentValue.exercises,
+    0
+  );
+
+  return (
+    <>
+      <Header course={course.name}></Header>
+      <Content parts={course.parts}></Content>
+      <Total sum={sum}></Total>
+    </>
+  );
+};
 
 const App = () => {
   const course = {
