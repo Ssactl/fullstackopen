@@ -1,6 +1,7 @@
 import Person from "./Person";
 
 const Persons = ({ persons, search }) => {
+  console.log(persons);
   return (
     <ul>
       {persons
