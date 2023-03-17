@@ -3,11 +3,12 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import axios from "axios";
+import personService from "./services/persons";
 
 const App = () => {
   useEffect(() => {
     console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
+    personService.getAll().then((response) => {
       console.log("promise fullfilled");
       setPersons(response.data);
     });
@@ -40,10 +41,9 @@ const App = () => {
         name: newName,
         number: newNumber,
       };
-      const url = "http://localhost:3001/persons";
 
       //add new person details to the phonebook by using HTTP POST request
-      axios.post(url, newPerson).then((response) => {
+      personService.create(newPerson).then((response) => {
         setPersons(persons.concat(response.data));
         setNewName("");
         setNewNumber("");
