@@ -33,10 +33,21 @@ const App = () => {
   function handleSubmit(event) {
     event.preventDefault();
 
-    if (persons.filter((p) => p.name === newName)) {
+    if (persons.filter((p) => p.name === newName) === []) {
       window.alert(`${newName} is already added to phonebook`);
     } else {
-      setPersons([...persons, { name: newName }]);
+      const newPerson = {
+        name: newName,
+        number: newNumber,
+      };
+      const url = "http://localhost:3001/persons";
+
+      //add new person details to the phonebook by using HTTP POST request
+      axios.post(url, newPerson).then((response) => {
+        setPersons(persons.concat(response.data));
+        setNewName("");
+        setNewNumber("");
+      });
     }
   }
 
