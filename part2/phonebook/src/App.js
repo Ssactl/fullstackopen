@@ -51,6 +51,17 @@ const App = () => {
     }
   }
 
+  function deletePerson(event) {
+    console.log(event.target.id);
+    const name = persons.find(({ id }) => {
+      return id == event.target.id;
+    }).name;
+    if (window.confirm(`Delete ${name} ?`)) {
+      personService.deletePerson(event.target.id);
+      personService.getAll().then((response) => setPersons(response.data));
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -64,7 +75,11 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons persons={persons} search={newSearch} />
+      <Persons
+        persons={persons}
+        search={newSearch}
+        handleDeleteClick={deletePerson}
+      />
     </div>
   );
 };

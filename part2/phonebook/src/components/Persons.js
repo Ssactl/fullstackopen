@@ -1,9 +1,9 @@
 import Person from "./Person";
 
-const Persons = ({ persons, search }) => {
+const Persons = ({ persons, search, handleDeleteClick }) => {
   console.log(persons);
   return (
-    <ul>
+    <>
       {persons
         .filter(
           (person) =>
@@ -11,9 +11,15 @@ const Persons = ({ persons, search }) => {
             search.toUpperCase()
         )
         .map((person) => (
-          <Person key={person.id} name={person.name} number={person.number} />
+          <>
+            <Person key={person.id} name={person.name} number={person.number} />
+            <button id={person.id} onClick={handleDeleteClick}>
+              delete
+            </button>
+            <br />
+          </>
         ))}
-    </ul>
+    </>
   );
 };
 
