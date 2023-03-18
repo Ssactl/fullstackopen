@@ -4,6 +4,7 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import axios from "axios";
 import personService from "./services/persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   useEffect(() => {
@@ -18,6 +19,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newSearch, setSearch] = useState("");
+  const [newMessage, setNewMessage] = useState(null);
 
   function handleNameChange(event) {
     setNewName(event.target.value);
@@ -34,7 +36,7 @@ const App = () => {
   function handleSubmit(event) {
     event.preventDefault();
 
-    if (persons.filter((p) => p.name === newName) !== []) {
+    if (persons.filter((p) => p.name === newName) === []) {
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace the old number with a new one?`
@@ -46,6 +48,7 @@ const App = () => {
           setPersons(
             persons.map((p) => (p.id === changePerson.id ? response.data : p))
           );
+          setNewMessage(`Changed ${changePerson.name}'s number`);
         });
       }
     } else {
@@ -59,6 +62,7 @@ const App = () => {
         setPersons(persons.concat(response.data));
         setNewName("");
         setNewNumber("");
+        setNewMessage(`Added ${newName}`);
       });
     }
   }
@@ -71,12 +75,14 @@ const App = () => {
     if (window.confirm(`Delete ${name} ?`)) {
       personService.deletePerson(event.target.id);
       personService.getAll().then((response) => setPersons(response.data));
+      setNewMessage(`Deleted ${name}`);
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={newMessage} />
       <Filter value={newSearch} handleChange={handleSearchChange} />
       <h3>add a new</h3>
       <PersonForm
