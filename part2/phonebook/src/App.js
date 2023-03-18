@@ -20,6 +20,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [newSearch, setSearch] = useState("");
   const [newMessage, setNewMessage] = useState(null);
+  const [messageStatus, setMessageStauts] = useState("");
 
   function handleNameChange(event) {
     setNewName(event.target.value);
@@ -36,20 +37,36 @@ const App = () => {
   function handleSubmit(event) {
     event.preventDefault();
 
-    if (persons.filter((p) => p.name === newName) === []) {
+    if (persons.filter((p) => p.name === newName) !== []) {
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace the old number with a new one?`
         )
       ) {
+        //update phone number
         const person = persons.find((p) => p.name === newName);
         const changePerson = { ...person, number: newNumber };
-        personService.update(changePerson.id, changePerson).then((response) => {
-          setPersons(
-            persons.map((p) => (p.id === changePerson.id ? response.data : p))
-          );
-          setNewMessage(`Changed ${changePerson.name}'s number`);
-        });
+        personService
+          .update(changePerson.id, changePerson)
+          .then((response) => {
+            setPersons(
+              persons.map((p) => (p.id === changePerson.id ? response.data : p))
+            );
+            setMessageStauts("success");
+            setNewMessage(`Changed ${changePerson.name}'s number`);
+          })
+          .catch((error) => {
+            console.log(error);
+            setMessageStauts("error");
+            setNewMessage(
+              `Information of ${changePerson.name} was already removed from server`
+            );
+            setTimeout(() => {
+              setMessageStauts("");
+              setNewMessage(null);
+            }, 5000);
+            setPersons(persons.filter((p) => p.id !== changePerson.id));
+          });
       }
     } else {
       const newPerson = {
@@ -62,7 +79,12 @@ const App = () => {
         setPersons(persons.concat(response.data));
         setNewName("");
         setNewNumber("");
+        setMessageStauts("success");
         setNewMessage(`Added ${newName}`);
+        setTimeout(() => {
+          setMessageStauts("");
+          setNewMessage(null);
+        }, 5000);
       });
     }
   }
@@ -75,14 +97,19 @@ const App = () => {
     if (window.confirm(`Delete ${name} ?`)) {
       personService.deletePerson(event.target.id);
       personService.getAll().then((response) => setPersons(response.data));
+      setMessageStauts("success");
       setNewMessage(`Deleted ${name}`);
+      setTimeout(() => {
+        setMessageStauts("");
+        setNewMessage(null);
+      }, 5000);
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={newMessage} />
+      <Notification message={newMessage} status={messageStatus} />
       <Filter value={newSearch} handleChange={handleSearchChange} />
       <h3>add a new</h3>
       <PersonForm
